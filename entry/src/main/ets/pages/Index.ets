@@ -28,7 +28,10 @@ struct Index {
     @State isTouching: boolean = false;
     @State list: Array<ListItem> = [];
     @State addInput: string = '';
-    private offTrigger: number = -65;
+    offTrigger: number = -65;
+    deleteItem = (index: number): void => {
+        this.list.splice(index, 1)
+    }
 
     build() {
         Stack({ alignContent: Alignment.TopStart }) {
@@ -41,12 +44,13 @@ struct Index {
                     .height(40)
                     .justifyContent(FlexAlign.Center)
 
-                    ForEach(this.list, (item, index) => {
+                    ForEach(this.list, (item: ListItem, index: number) => {
                         ListItemComponent({
-                            item,
-                            deleteItem: this.deleteItem.bind(null, index)
+                            item: item,
+                            index: index,
+                            deleteItem: this.deleteItem
                         })
-                    }, (item) => item.id)
+                    }, (item: ListItem) => item.id)
                 }
                 .width('100%')
                 .constraintSize({
@@ -78,26 +82,29 @@ struct Index {
             })
 
             AddBlock({
-                addInput: $addInput,
-                addShow: $addShow,
-                list: $list,
+                addInput: this.addInput,
+                addShow: this.addShow,
+                list: this.list,
             })
         }
         .width('100%')
         .height('100%')
     }
-
-    public  deleteItem = (index: number) => {
-        this.list.splice(index, 1)
-    }
 }
 
 @Component
 struct ListItemComponent {
-    @ObjectLink item: ListItem;
     @State origin: number = 0;
-    deleteItem: () => {};
-    private offTrigger: number = 50;
+    @ObjectLink item: ListItem;
+    @Prop index: number;
+    deleteItem: (i: number) => void = () => {};
+    offTrigger: number = 50;
+    getDecorationType = (): TextDecorationType => {
+        return this.item.status === Status.Ok ? TextDecorationType.None : TextDecorationType.LineThrough
+    }
+    getTip = (): string => {
+        return this.item.status === Status.Ok ? '(右划完成)' : '(已完成，左划删除)'
+    }
 
     build() {
         Column() {
@@ -119,23 +126,15 @@ struct ListItemComponent {
         })
         .onTouch((e) => {
             if (e.type === TouchType.Down) {
-                this.origin = e.touches[0].screenX;
+                this.origin = e.touches[0].windowX;
             } else if (e.type === TouchType.Move) {
-                if (e.touches[0].screenX - this.origin >= this.offTrigger && this.item.status === Status.Ok) {
+                if (e.touches[0].windowX - this.origin >= this.offTrigger && this.item.status === Status.Ok) {
                     this.item.status = Status.Done
-                } else if (this.origin - e.touches[0].screenX >= this.offTrigger && this.item.status === Status.Done) {
-                    this.deleteItem()
+                } else if (this.origin - e.touches[0].windowX >= this.offTrigger && this.item.status === Status.Done) {
+                    this.deleteItem(this.index)
                 }
             }
         })
-    }
-
-    private getDecorationType = (): TextDecorationType => {
-        return this.item.status === Status.Ok ? TextDecorationType.None : TextDecorationType.LineThrough
-    }
-
-    private getTip = (): string => {
-        return this.item.status === Status.Ok ? '(右划完成)' : '(已完成，左划删除)'
     }
 }
 
@@ -144,6 +143,12 @@ struct AddBlock {
     @Link addInput: string;
     @Link addShow: Visibility;
     @Link list: Array<ListItem>;
+
+    addList = () => {
+        this.addShow = Visibility.None
+        this.list.push(new ListItem(this.addInput))
+        this.addInput = ''
+    }
 
     build() {
         Column() {
@@ -169,9 +174,4 @@ struct AddBlock {
         .visibility(this.addShow)
     }
 
-    private addList = () => {
-        this.addShow = Visibility.None
-        this.list.push(new ListItem(this.addInput))
-        this.addInput = ''
-    }
 }
