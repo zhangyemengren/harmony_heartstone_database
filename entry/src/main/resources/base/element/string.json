@@ -11,6 +11,14 @@
     {
       "name": "EntryAbility_label",
       "value": "default label"
+    },
+    {
+      "name": "tab_home",
+      "value": "home"
+    },
+    {
+      "name": "tab_user",
+      "value": "user"
     }
   ]
 }

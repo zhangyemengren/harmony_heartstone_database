@@ -1,177 +1,67 @@
-import router from '@ohos.router';
+import {TAB_GROUP} from "../data/TabConfig";
+import { TabItems } from '../types/DataType';
+import {HomePage} from "./Home";
 
-enum Status {
-    Ok,
-    Done,
+@Builder
+function TabContentItem(index: number) {
+    Column() {
+        Text(`Tab Content${index + 1}`)
+            .fontSize(36)
+            .fontColor('#182431')
+            .fontWeight(500)
+            .opacity(0.4)
+            .margin({ top: 30, bottom: 56.5 })
+        Divider()
+            .strokeWidth(0.5)
+            .color('#182431')
+            .opacity(0.05)
+    }.width('100%')
 }
 
-@Observed
-class ListItem {
-    static id: number = 0;
-    public status: Status;
-    public name: string;
-    public id: string;
-
-    constructor(name: string) {
-        this.status = Status.Ok
-        this.name = name
-        this.id = ListItem.id.toString()
-        ListItem.id++
-    }
-}
-
+// xxx.ets
 @Entry
 @Component
-struct Index {
-    @State addShow: Visibility = Visibility.None;
-    @State offsetY: number = 0;
-    @State isTouching: boolean = false;
-    @State list: Array<ListItem> = [];
-    @State addInput: string = '';
-    offTrigger: number = -65;
-    deleteItem = (index: number): void => {
-        this.list.splice(index, 1)
-    }
+struct TabEntry {
+    @State currentIndex: number = 0
+    @State tabList:TabItems[] = TAB_GROUP
+    private controller: TabsController = new TabsController()
 
-    build() {
-        Stack({ alignContent: Alignment.TopStart }) {
-            Scroll() {
-                Column() {
-                    Row() {
-                        Text("下划新增")
-                    }
-                    .width(200)
-                    .height(40)
-                    .justifyContent(FlexAlign.Center)
-
-                    ForEach(this.list, (item: ListItem, index: number) => {
-                        ListItemComponent({
-                            item: item,
-                            index: index,
-                            deleteItem: this.deleteItem
-                        })
-                    }, (item: ListItem) => item.id)
-                }
-                .width('100%')
-                .constraintSize({
-                    minHeight: '100%'
-                })
-                .margin({ top: -10 })
-                .padding({ bottom: 20 })
-            }
-            .width('100%')
-            .height('100%')
-            .edgeEffect(EdgeEffect.Spring)
-            .onScroll((_, offY) => {
-                if (this.isTouching) {
-                    this.offsetY += offY
-                }
-            })
-            .onScrollStop(() => {
-                this.offsetY = 0;
-            })
-            .onTouch((e) => {
-                if (e.type === TouchType.Down) {
-                    this.isTouching = true;
-                } else if (e.type === TouchType.Up) {
-                    this.isTouching = false;
-                    if (this.offsetY <= this.offTrigger) {
-                        this.addShow = Visibility.Visible
-                    }
-                }
-            })
-
-            AddBlock({
-                addInput: this.addInput,
-                addShow: this.addShow,
-                list: this.list,
-            })
-        }
-        .width('100%')
-        .height('100%')
-    }
-}
-
-@Component
-struct ListItemComponent {
-    @State origin: number = 0;
-    @ObjectLink item: ListItem;
-    @Prop index: number;
-    deleteItem: (i: number) => void = () => {};
-    offTrigger: number = 50;
-    getDecorationType = (): TextDecorationType => {
-        return this.item.status === Status.Ok ? TextDecorationType.None : TextDecorationType.LineThrough
-    }
-    getTip = (): string => {
-        return this.item.status === Status.Ok ? '(右划完成)' : '(已完成，左划删除)'
-    }
-
-    build() {
+    @Builder
+    tabBuilder(item: TabItems, index: number) {
         Column() {
-            Text(this.item.name)
-                .decoration({
-                    type: this.getDecorationType()
-                })
-            Text(this.getTip())
-        }
-        .width(200)
-        .height(100)
-        .justifyContent(FlexAlign.Center)
-        .border({
-            width: 1,
-            color: '#000'
-        })
-        .margin({
-            top: 20
-        })
-        .onTouch((e) => {
-            if (e.type === TouchType.Down) {
-                this.origin = e.touches[0].windowX;
-            } else if (e.type === TouchType.Move) {
-                if (e.touches[0].windowX - this.origin >= this.offTrigger && this.item.status === Status.Ok) {
-                    this.item.status = Status.Done
-                } else if (this.origin - e.touches[0].windowX >= this.offTrigger && this.item.status === Status.Done) {
-                    this.deleteItem(this.index)
-                }
-            }
-        })
-    }
-}
-
-@Component
-struct AddBlock {
-    @Link addInput: string;
-    @Link addShow: Visibility;
-    @Link list: Array<ListItem>;
-
-    addList = () => {
-        this.addShow = Visibility.None
-        this.list.push(new ListItem(this.addInput))
-        this.addInput = ''
+            Image(this.currentIndex === index ? item.iconActive : item.icon)
+                .width(24)
+                .height(24)
+                .margin({ bottom: 4 })
+                .objectFit(ImageFit.Contain)
+            Text(item.name)
+                .fontColor(this.currentIndex === index ? $r("app.color.main") : $r("app.color.text_color"))
+                .fontSize(10)
+                .fontWeight(500)
+                .lineHeight(14)
+        }.width('100%')
     }
 
     build() {
-        Column() {
-            Row() {
-                TextInput({ text: this.addInput })
-                    .width(100)
-                    .onChange((value: string) => {
-                        this.addInput = value
-                    })
-                Button('添加').onClick(this.addList)
-                Button('取消').backgroundColor("#fff").border({
-                    width: 1,
-                    color: '#000'
-                }).fontColor('#000').onClick(() => {
-                    this.addShow = Visibility.None
-                    this.addInput = ''
-                })
-            }
+        Tabs({ barPosition: BarPosition.End, controller: this.controller }) {
+            ForEach(this.tabList, (item: TabItems, index: number) => {
+                TabContent() {
+                    if (index === 0){
+                        HomePage()
+                    } else {
+                        TabContentItem(index)
+                    }
+                }.tabBar(this.tabBuilder(item, index))
+            })
         }
-        .width('100%')
-        .height('100%')
-        .backgroundColor('#fff')
-        .visibility(this.addShow)
-    }
+        .vertical(false)
+        .barHeight(56)
+        .scrollable(false) //防止滑动页面切换
+        .backgroundColor('#F1F3F5')
+        .animationDuration(0) // 停用切换动画
+        .onChange((index: number) => {
+            this.currentIndex = index
+        })
 
+    }
 }
