@@ -6,11 +6,11 @@
     },
     {
       "name": "EntryAbility_desc",
-      "value": "description"
+      "value": "app入口描述"
     },
     {
       "name": "EntryAbility_label",
-      "value": "label"
+      "value": "app入口名"
     }
   ]
 }

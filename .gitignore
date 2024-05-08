@@ -9,3 +9,6 @@
 /.clang-format
 /.clang-tidy
 **/.test
+/.appanalyzer
+*.pdb
+**/.DS_Store
