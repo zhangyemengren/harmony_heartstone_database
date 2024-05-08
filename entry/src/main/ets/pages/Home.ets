@@ -1,7 +1,11 @@
 import router from '@ohos.router'
 
+@Entry
 @Component
 export struct HomePage{
+    @Provide('pageInfos') pageInfos: NavPathStack = new NavPathStack()
+
+
     build(){
         Button(){
             Text("go to do list")

@@ -1,4 +1,3 @@
-
 enum Status {
     Ok,
     Done,
@@ -33,66 +32,59 @@ export struct Todo {
     }
 
     build() {
-        Column() {
-            NavDestination() {
-                Stack({ alignContent: Alignment.TopStart }) {
-                    Scroll() {
-                        Column() {
-                            Row() {
-                                Text("下划新增")
-                            }
-                            .width(200)
-                            .height(40)
-                            .justifyContent(FlexAlign.Center)
-
-                            ForEach(this.list, (item: ListItem, index: number) => {
-                                ListItemComponent({
-                                    item: item,
-                                    index: index,
-                                    deleteItem: this.deleteItem
-                                })
-                            }, (item: ListItem) => item.id)
-                        }
-                        .width('100%')
-                        .constraintSize({
-                            minHeight: '100%'
-                        })
-                        .margin({ top: -10 })
-                        .padding({ bottom: 20 })
+        Stack({ alignContent: Alignment.TopStart }) {
+            Scroll() {
+                Column() {
+                    Row() {
+                        Text("下划新增")
                     }
-                    .width('100%')
-                    .height('100%')
-                    .edgeEffect(EdgeEffect.Spring)
-                    .onScroll((_, offY) => {
-                        if (this.isTouching) {
-                            this.offsetY += offY
-                        }
-                    })
-                    .onScrollStop(() => {
-                        this.offsetY = 0;
-                    })
-                    .onTouch((e) => {
-                        if (e.type === TouchType.Down) {
-                            this.isTouching = true;
-                        } else if (e.type === TouchType.Up) {
-                            this.isTouching = false;
-                            if (this.offsetY <= this.offTrigger) {
-                                this.addShow = Visibility.Visible
-                            }
-                        }
-                    })
+                    .width(200)
+                    .height(40)
+                    .justifyContent(FlexAlign.Center)
 
-                    AddBlock({
-                        addInput: this.addInput,
-                        addShow: this.addShow,
-                        list: this.list,
-                    })
+                    ForEach(this.list, (item: ListItem, index: number) => {
+                        ListItemComponent({
+                            item: item,
+                            index: index,
+                            deleteItem: this.deleteItem
+                        })
+                    }, (item: ListItem) => item.id)
                 }
+                .width('100%')
+                .constraintSize({
+                    minHeight: '100%'
+                })
+                .margin({ top: -10 })
+                .padding({ bottom: 20 })
             }
-            .title("todo title")
+            .width('100%')
+            .height('100%')
+            .edgeEffect(EdgeEffect.Spring)
+            .onScroll((_, offY) => {
+                if (this.isTouching) {
+                    this.offsetY += offY
+                }
+            })
+            .onScrollStop(() => {
+                this.offsetY = 0;
+            })
+            .onTouch((e) => {
+                if (e.type === TouchType.Down) {
+                    this.isTouching = true;
+                } else if (e.type === TouchType.Up) {
+                    this.isTouching = false;
+                    if (this.offsetY <= this.offTrigger) {
+                        this.addShow = Visibility.Visible
+                    }
+                }
+            })
+
+            AddBlock({
+                addInput: this.addInput,
+                addShow: this.addShow,
+                list: this.list,
+            })
         }
-        .width('100%')
-        .height('100%')
     }
 }
 
@@ -102,10 +94,8 @@ struct ListItemComponent {
     @ObjectLink item: ListItem;
     @Prop index: number;
     offTrigger: number = 50;
-
     deleteItem: (i: number) => void = () => {
     };
-
     getDecorationType = (): TextDecorationType => {
         return this.item.status === Status.Ok ? TextDecorationType.None : TextDecorationType.LineThrough
     }
