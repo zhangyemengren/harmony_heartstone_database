@@ -1,3 +1,4 @@
+import {TitleBar} from "../components/TitleBar";
 enum Status {
     Ok,
     Done,
@@ -32,58 +33,61 @@ export struct Todo {
     }
 
     build() {
-        Stack({ alignContent: Alignment.TopStart }) {
-            Scroll() {
-                Column() {
-                    Row() {
-                        Text("下划新增")
-                    }
-                    .width(200)
-                    .height(40)
-                    .justifyContent(FlexAlign.Center)
+        Flex({direction: FlexDirection.Column}) {
+            TitleBar({title: "Todo 页 标题"})
+            Stack({ alignContent: Alignment.TopStart }) {
+                Scroll() {
+                    Column() {
+                        Row() {
+                            Text("下划新增")
+                        }
+                        .width(200)
+                        .height(40)
+                        .justifyContent(FlexAlign.Center)
 
-                    ForEach(this.list, (item: ListItem, index: number) => {
-                        ListItemComponent({
-                            item: item,
-                            index: index,
-                            deleteItem: this.deleteItem
-                        })
-                    }, (item: ListItem) => item.id)
+                        ForEach(this.list, (item: ListItem, index: number) => {
+                            ListItemComponent({
+                                item: item,
+                                index: index,
+                                deleteItem: this.deleteItem
+                            })
+                        }, (item: ListItem) => item.id)
+                    }
+                    .width('100%')
+                    .constraintSize({
+                        minHeight: '100%'
+                    })
+                    .margin({ top: -10 })
+                    .padding({ bottom: 20 })
                 }
                 .width('100%')
-                .constraintSize({
-                    minHeight: '100%'
-                })
-                .margin({ top: -10 })
-                .padding({ bottom: 20 })
-            }
-            .width('100%')
-            .height('100%')
-            .edgeEffect(EdgeEffect.Spring)
-            .onScroll((_, offY) => {
-                if (this.isTouching) {
-                    this.offsetY += offY
-                }
-            })
-            .onScrollStop(() => {
-                this.offsetY = 0;
-            })
-            .onTouch((e) => {
-                if (e.type === TouchType.Down) {
-                    this.isTouching = true;
-                } else if (e.type === TouchType.Up) {
-                    this.isTouching = false;
-                    if (this.offsetY <= this.offTrigger) {
-                        this.addShow = Visibility.Visible
+                .height('100%')
+                .edgeEffect(EdgeEffect.Spring)
+                .onScroll((_, offY) => {
+                    if (this.isTouching) {
+                        this.offsetY += offY
                     }
-                }
-            })
+                })
+                .onScrollStop(() => {
+                    this.offsetY = 0;
+                })
+                .onTouch((e) => {
+                    if (e.type === TouchType.Down) {
+                        this.isTouching = true;
+                    } else if (e.type === TouchType.Up) {
+                        this.isTouching = false;
+                        if (this.offsetY <= this.offTrigger) {
+                            this.addShow = Visibility.Visible
+                        }
+                    }
+                })
 
-            AddBlock({
-                addInput: this.addInput,
-                addShow: this.addShow,
-                list: this.list,
-            })
+                AddBlock({
+                    addInput: this.addInput,
+                    addShow: this.addShow,
+                    list: this.list,
+                })
+            }
         }
     }
 }

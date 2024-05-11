@@ -10,4 +10,6 @@
   - @ohos.router
 - kit
 - 自定义组件
-  - title bar(todo)
+  - title bar
+- 调试
+  - 组件单独预览- @Preview 装饰器
