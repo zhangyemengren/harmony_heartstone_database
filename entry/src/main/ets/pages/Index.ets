@@ -25,6 +25,7 @@ struct TabEntry {
     @State currentIndex: number = 0
     @State tabList:TabItems[] = TAB_GROUP
     private controller: TabsController = new TabsController()
+    // pageInfos: NavPathStack = new NavPathStack()
 
     @Builder
     tabBuilder(item: TabItems, index: number) {

@@ -21,7 +21,7 @@ class ListItem {
 
 @Entry
 @Component
-export struct Todo {
+struct Todo {
     @State addShow: Visibility = Visibility.None;
     @State offsetY: number = 0;
     @State isTouching: boolean = false;
