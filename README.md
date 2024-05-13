@@ -9,6 +9,7 @@
 - 能力
   - @ohos.router
 - kit
+  - EntryAbility/UIAbility(打开下方log， filter选择 user logs Selected app查看 日志)
 - 自定义组件
   - title bar
 - 调试
