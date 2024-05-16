@@ -8,6 +8,7 @@
   - Navigation
 - 能力
   - @ohos.router
+  - 自定义组件的生命周期/启动页跳转 pages/Start
 - kit
   - EntryAbility/UIAbility(打开下方log， filter选择 user logs Selected app查看 日志)
 - 自定义组件
