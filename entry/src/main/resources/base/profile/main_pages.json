@@ -3,6 +3,8 @@
     "pages/Index",
     "pages/Second",
     "pages/Todo",
-    "pages/Start"
+    "pages/Start",
+    "pages/ArkUI",
+    "pages/ArkUI_LinearLayout"
   ]
 }
