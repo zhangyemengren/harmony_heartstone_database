@@ -4,7 +4,7 @@ import { TitleBar } from '../components/TitleBar';
 @Component
 @Preview
 @Entry
-export struct HomePage {
+export struct LinearLayout {
     scroller: Scroller = new Scroller();
 
     build() {
