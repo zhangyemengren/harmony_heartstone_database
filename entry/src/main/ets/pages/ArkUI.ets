@@ -21,6 +21,17 @@ export struct HomePage{
                     url: "pages/ArkUI_LinearLayout"
                 })
             })
+            Button(){
+                Text("线性布局")
+            }
+            .width(200)
+            .height(50)
+            .margin({top: 100})
+            .onClick(() => {
+                router.pushUrl({
+                    url: "pages/ArkUI_StackLayout"
+                })
+            })
         }.height("100%")
 
     }
