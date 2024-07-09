@@ -1,11 +1,7 @@
 {
   "src": [
     "pages/Index",
-    "pages/Second",
     "pages/Todo",
-    "pages/Start",
-    "pages/ArkUI",
-    "pages/ArkUI_LinearLayout",
-    "pages/ArkUI_StackLayout"
+    "pages/Start"
   ]
 }

@@ -18,16 +18,6 @@ export struct HomePage{
                     url: "pages/Todo"
                 })
             })
-            Button(){
-                Text("ArkUI")
-            }
-            .width(200)
-            .height(50)
-            .onClick(() => {
-                router.pushUrl({
-                    url: "pages/ArkUI"
-                })
-            })
         }
 
     }
