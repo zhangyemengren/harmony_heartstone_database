@@ -1,6 +1,6 @@
 import {TAB_GROUP} from "../data/TabConfig";
 import { TabItems } from '../types/DataType';
-import {HomePage} from "./Home";
+import {HomePage} from "../components/Home/Home";
 
 @Builder
 function TabContentItem(index: number) {

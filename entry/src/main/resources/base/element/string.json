@@ -5,6 +5,10 @@
       "value": "module description"
     },
     {
+      "name": "internet_reason",
+      "value": "for request"
+    },
+    {
       "name": "EntryAbility_desc",
       "value": "description"
     },
