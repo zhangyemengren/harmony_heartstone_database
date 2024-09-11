@@ -1,17 +1,1 @@
 ## todo-list
-- 配置 
-  - app.json5 版本 商店图标等
-  - module.json5 入口图标 名称 启动背景 启动图标等
-  - main_pages.json 页面配置等
-- 组件
-  - tab
-  - Navigation
-- 能力
-  - @ohos.router
-  - 自定义组件的生命周期/启动页跳转 pages/Start
-- kit
-  - EntryAbility/UIAbility(打开下方log， filter选择 user logs Selected app查看 日志)
-- 自定义组件
-  - title bar
-- 调试
-  - 组件单独预览- @Preview 装饰器
