@@ -30,11 +30,10 @@ struct TabEntry {
     @Builder
     tabBuilder(item: TabItems, index: number) {
         Column() {
-            Image(this.currentIndex === index ? item.iconActive : item.icon)
+            SymbolGlyph(this.currentIndex === index ? item.iconActive : item.icon)
                 .width(24)
                 .height(24)
                 .margin({ bottom: 4 })
-                .objectFit(ImageFit.Contain)
             Text(item.name)
                 .fontColor(this.currentIndex === index ? $r("app.color.main") : $r("app.color.text_color"))
                 .fontSize(10)

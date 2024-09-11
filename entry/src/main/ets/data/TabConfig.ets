@@ -3,12 +3,12 @@ import {TabItems} from "../types/DataType";
 export const TAB_GROUP: TabItems[] = [
     {
         name: $r("app.string.tab_home"),
-        icon: $r("app.media.ic_movie"),
-        iconActive: $r("app.media.ic_movie_active"),
+        icon: $r('sys.symbol.house'),
+        iconActive: $r("sys.symbol.house_fill"),
     },
     {
         name: $r("app.string.tab_user"),
-        icon: $r("app.media.ic_user"),
-        iconActive: $r("app.media.ic_user_active"),
+        icon: $r("sys.symbol.person"),
+        iconActive: $r("sys.symbol.person"),
     }
 ]

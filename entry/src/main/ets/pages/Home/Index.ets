@@ -1,9 +1,26 @@
 import { http } from '@kit.NetworkKit';
+import { BusinessError } from '@kit.BasicServicesKit';
 
+interface Data{
+    cardCount:number;
+    page: number;
+    pageCount: number;
+    cards: Card[];
+}
+interface Card{
+    image: string;
+}
+
+class HomeModel{
+    data: Data;
+    constructor(data?: Data) {
+        this.data = data || {cardCount:0, page: 1, pageCount: 1, cards: []};
+    }
+}
 @Entry
 @Component
 export struct HomePage {
-    private arr: number[] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+    @State private data: HomeModel = new HomeModel();
 
     @Builder
     itemHead(text: string) {
@@ -18,10 +35,13 @@ export struct HomePage {
         console.log('IndexComponent onPageShow1');
         let httpRequest = http.createHttp();
         httpRequest.request(
-            "http://www.baidu.com/"
+            "http://localhost:8000/cards"
         ).then((res: http.HttpResponse) => {
-            console.info('code:' + JSON.stringify(res.responseCode));
+            const data = res.result as string;
+            this.data = new HomeModel(JSON.parse(data));
             httpRequest.destroy();
+        }).catch((err: BusinessError) => {
+            console.error('error:' + JSON.stringify(err));
         })
     }
 
@@ -29,17 +49,20 @@ export struct HomePage {
         Column() {
             List({ space: 20, initialIndex: 0 }) {
                 ListItemGroup({ header: this.itemHead("header"), space: 20}){
-                    ForEach(this.arr, (item: number) => {
+                    ForEach(this.data.data.cards, (item: Card) => {
                         ListItem() {
-                            Text('' + item)
-                                .width('100%')
-                                .height(100)
-                                .fontSize(16)
-                                .textAlign(TextAlign.Center)
-                                .borderRadius(10)
-                                .backgroundColor(0xFFFFFF)
+                            Column(){
+                                Text('' + item.image)
+                                    .width('100%')
+                                    .height(100)
+                                    .fontSize(16)
+                                    .textAlign(TextAlign.Center)
+                                    .borderRadius(10)
+                                    .backgroundColor(0xFFFFFF)
+                                Image(item.image)
+                            }
                         }
-                    }, (item: string) => item)
+                    }, (item: Card) => item.image)
                 }
                 .divider({
                     strokeWidth: 2,

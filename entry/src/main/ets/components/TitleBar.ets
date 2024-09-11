@@ -7,7 +7,7 @@ export struct TitleBar {
 
     build() {
         Row() {
-            Image($r('app.media.ic_back'))
+            Image($r('sys.symbol.backward_end_fill'))
                 .width(24)
                 .height(24)
                 .margin({ bottom: 4 })
