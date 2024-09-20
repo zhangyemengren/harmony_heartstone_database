@@ -31,15 +31,14 @@ struct TabEntry {
     tabBuilder(item: TabItems, index: number) {
         Column() {
             SymbolGlyph(this.currentIndex === index ? item.iconActive : item.icon)
-                .width(24)
-                .height(24)
-                .margin({ bottom: 4 })
+                .fontSize(20)
+                .margin({bottom: 4})
             Text(item.name)
                 .fontColor(this.currentIndex === index ? $r("app.color.main") : $r("app.color.text_color"))
-                .fontSize(10)
+                .fontSize(12)
                 .fontWeight(500)
                 .lineHeight(14)
-        }.width('100%')
+        }
     }
 
     build() {

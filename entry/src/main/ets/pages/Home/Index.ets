@@ -1,34 +1,60 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 
-interface Data{
-    cardCount:number;
+interface Data {
+    cardCount: number;
     page: number;
     pageCount: number;
     cards: Card[];
 }
-interface Card{
+
+interface Card {
     image: string;
 }
 
-class HomeModel{
+class HomeModel {
     data: Data;
+
     constructor(data?: Data) {
-        this.data = data || {cardCount:0, page: 1, pageCount: 1, cards: []};
+        this.data = data || {
+            cardCount: 0,
+            page: 1,
+            pageCount: 1,
+            cards: []
+        };
     }
 }
+
 @Entry
 @Component
 export struct HomePage {
-    @State private data: HomeModel = new HomeModel();
+    @State data: HomeModel = new HomeModel();
+    @State sheetHeight: number = 300;
+    @State sheetShow: boolean = false;
 
     @Builder
-    itemHead(text: string) {
-        Text(text)
-            .fontSize(20)
-            .backgroundColor(0xAABBCC)
-            .width("100%")
-            .padding(10)
+    itemHead() {
+        Flex({ alignItems: ItemAlign.Center }) {
+            TextInput()
+            Button({ type: ButtonType.Circle, stateEffect: true }) {
+                SymbolGlyph($r("sys.symbol.slider_vertical_3"))
+            }
+            .width(55)
+            .height(55)
+            .margin({ left: 20 })
+            .backgroundColor('white')
+            .onClick(() => {
+                this.sheetShow = true
+            })
+            .bindSheet(this.sheetShow,this.filter(), {
+                height: this.sheetHeight
+            })
+        }
+    }
+
+    @Builder
+    filter() {
+        Text("弹框")
     }
 
     onPageShow() {
@@ -48,10 +74,10 @@ export struct HomePage {
     build() {
         Column() {
             List({ space: 20, initialIndex: 0 }) {
-                ListItemGroup({ header: this.itemHead("header"), space: 20}){
+                ListItemGroup({ header: this.itemHead(), space: 20 }) {
                     ForEach(this.data.data.cards, (item: Card) => {
                         ListItem() {
-                            Column(){
+                            Column() {
                                 Text('' + item.image)
                                     .width('100%')
                                     .height(100)
@@ -77,22 +103,6 @@ export struct HomePage {
             .scrollBar(BarState.Off)
             .friction(0.6)
             .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
-            .onScrollIndex((firstIndex: number, lastIndex: number, centerIndex: number) => {
-                console.info('first' + firstIndex)
-                console.info('last' + lastIndex)
-                console.info('center' + centerIndex)
-            })
-            .onScrollVisibleContentChange((start: VisibleListContentInfo, end: VisibleListContentInfo) => {
-                console.log(' start index: ' + start.index +
-                    ' start item group area: ' + start.itemGroupArea +
-                    ' start index in group: ' + start.itemIndexInGroup)
-                console.log(' end index: ' + end.index +
-                    ' end item group area: ' + end.itemGroupArea +
-                    ' end index in group: ' + end.itemIndexInGroup)
-            })
-            .onDidScroll((scrollOffset: number, scrollState: ScrollState) => {
-                console.info(`onScroll scrollState = ScrollState` + scrollState + `, scrollOffset = ` + scrollOffset)
-            })
         }
         .width('100%')
         .height('100%')
