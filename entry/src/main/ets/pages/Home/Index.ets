@@ -33,7 +33,7 @@ export struct HomePage {
     @State sheetShow: boolean = false;
 
     @Builder
-    itemHead() {
+    header() {
         Flex({ alignItems: ItemAlign.Center }) {
             TextInput()
             Button({ type: ButtonType.Circle, stateEffect: true }) {
@@ -46,15 +46,48 @@ export struct HomePage {
             .onClick(() => {
                 this.sheetShow = true
             })
-            .bindSheet(this.sheetShow,this.filter(), {
-                height: this.sheetHeight
+            .bindSheet($$this.sheetShow, this.filter(), {
+                height: this.sheetHeight,
+                showClose: false
             })
         }
     }
 
     @Builder
+    filterItem(){
+        Column(){
+            Text("职业")
+            List({ space: 20, initialIndex: 0 }) {
+                ForEach([1, 2, 3], (item: string) => {
+                    ListItem() {
+                        Button() {
+                            Text("战士")
+                        }
+                    }
+                }, (item: string) => item)
+            }
+            .height(200)
+            .width("90%")
+            .border({ width: 3, color: Color.Red })
+            .alignListItem(ListItemAlign.Start)
+            .listDirection(Axis.Horizontal)
+            .scrollBar(BarState.Off)
+        }
+    }
+
+    @Builder
     filter() {
-        Text("弹框")
+        Scroll() {
+            Column() {
+                Text("筛选项")
+                this.filterItem()
+
+                this.filterItem()
+            }
+        }
+        .height('100%')
+        .scrollBar(BarState.Off)
+        .edgeEffect(EdgeEffect.Spring)
     }
 
     onPageShow() {
@@ -74,7 +107,7 @@ export struct HomePage {
     build() {
         Column() {
             List({ space: 20, initialIndex: 0 }) {
-                ListItemGroup({ header: this.itemHead(), space: 20 }) {
+                ListItemGroup({ header: this.header(), space: 20 }) {
                     ForEach(this.data.data.cards, (item: Card) => {
                         ListItem() {
                             Column() {
@@ -99,10 +132,10 @@ export struct HomePage {
             }
             .width('90%')
             .sticky(StickyStyle.Header)
-            .listDirection(Axis.Vertical) // 排列方向
+            .listDirection(Axis.Vertical)
             .scrollBar(BarState.Off)
             .friction(0.6)
-            .edgeEffect(EdgeEffect.Spring) // 边缘效果设置为Spring
+            .edgeEffect(EdgeEffect.Spring)
         }
         .width('100%')
         .height('100%')
