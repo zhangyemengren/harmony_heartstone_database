@@ -1,5 +1,6 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
+import { LengthMetrics } from '@kit.ArkUI';
 
 interface Data {
     cardCount: number;
@@ -54,24 +55,20 @@ export struct HomePage {
     }
 
     @Builder
-    filterItem(){
+    filterItem(list: number[]){
         Column(){
             Text("职业")
-            List({ space: 20, initialIndex: 0 }) {
-                ForEach([1, 2, 3], (item: string) => {
-                    ListItem() {
-                        Button() {
-                            Text("战士")
-                        }
-                    }
+            Flex({wrap: FlexWrap.Wrap, space: {main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5)}}){
+                ForEach(list, (item: number) => {
+                    Button("文案" ,{})
+                        .backgroundColor(Color.Transparent)
+                        .border({width:1, color: Color.Black})
+                        .fontColor(Color.Black)
                 }, (item: string) => item)
             }
-            .height(200)
+            .height('auto')
             .width("90%")
             .border({ width: 3, color: Color.Red })
-            .alignListItem(ListItemAlign.Start)
-            .listDirection(Axis.Horizontal)
-            .scrollBar(BarState.Off)
         }
     }
 
@@ -80,9 +77,9 @@ export struct HomePage {
         Scroll() {
             Column() {
                 Text("筛选项")
-                this.filterItem()
+                this.filterItem([1,2,3])
 
-                this.filterItem()
+                this.filterItem([1,2,3,4,5,6,7])
             }
         }
         .height('100%')
