@@ -76,12 +76,28 @@ export struct HomePage {
     filter() {
         Scroll() {
             Column() {
+                Row(){
+                    Text("bar")
+                }
+                .width(50)
+                .height(20)
+                .backgroundColor(Color.Green)
+                .draggable(true)
+                .onDragStart((e:DragEvent) => {
+                    console.info(e.getWindowX() + 'oy')
+                })
+                .onClick(() => {
+                    console.error("dayin")
+                })
                 Text("筛选项")
                 this.filterItem([1,2,3])
 
                 this.filterItem([1,2,3,4,5,6,7])
             }
+            .width('100%')
+            .height('100%')
         }
+        .width('100%')
         .height('100%')
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
