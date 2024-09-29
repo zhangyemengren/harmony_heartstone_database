@@ -1,12 +1,20 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { LengthMetrics } from '@kit.ArkUI';
+import {Response} from '../../data/response';
 
 interface Data {
     cardCount: number;
     page: number;
     pageCount: number;
     cards: Card[];
+}
+
+interface Meta{
+    classes: Classes[];
+}
+interface Classes{
+    name: string;
 }
 
 interface Card {
@@ -106,11 +114,26 @@ export struct HomePage {
     onPageShow() {
         console.log('IndexComponent onPageShow1');
         let httpRequest = http.createHttp();
+        // httpRequest.request(
+        //     "http://localhost:8000/cards"
+        // ).then((res: http.HttpResponse) => {
+        //     const data = res.result as string;
+        //     this.data = new HomeModel(JSON.parse(data));
+        //     httpRequest.destroy();
+        // }).catch((err: BusinessError) => {
+        //     console.error('error:' + JSON.stringify(err));
+        // })
         httpRequest.request(
-            "http://localhost:8000/cards"
+            "http://localhost:8000/meta",
+            {
+                expectDataType: http.HttpDataType.STRING,
+                header: {'Content-Type': 'application/json' },
+            }
         ).then((res: http.HttpResponse) => {
             const data = res.result as string;
-            this.data = new HomeModel(JSON.parse(data));
+            const d:Response<Meta> = JSON.parse(data);
+            const firstName:string = d.data.classes[0].name;
+            console.log(firstName);
             httpRequest.destroy();
         }).catch((err: BusinessError) => {
             console.error('error:' + JSON.stringify(err));
