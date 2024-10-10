@@ -1,6 +1,7 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { LengthMetrics } from '@kit.ArkUI';
+import { display } from '@kit.ArkUI';
 import {Response} from '../../data/response';
 
 interface Data {
@@ -8,12 +9,14 @@ interface Data {
     page: number;
     pageCount: number;
     cards: Card[];
+    classes: Filter[];
 }
 
 interface Meta{
-    classes: Classes[];
+    classes: Filter[];
 }
-interface Classes{
+interface Filter{
+    id: number;
     name: string;
 }
 
@@ -22,15 +25,12 @@ interface Card {
 }
 
 class HomeModel {
-    data: Data;
+    classes: Filter[];
+    cards: Card[];
 
     constructor(data?: Data) {
-        this.data = data || {
-            cardCount: 0,
-            page: 1,
-            pageCount: 1,
-            cards: []
-        };
+        this.classes = data?.classes || [];
+        this.cards = data?.cards || [];
     }
 }
 
@@ -40,6 +40,7 @@ export struct HomePage {
     @State data: HomeModel = new HomeModel();
     @State sheetHeight: number = 300;
     @State sheetShow: boolean = false;
+    @State windowHeight:number = 0;
 
     @Builder
     header() {
@@ -63,16 +64,16 @@ export struct HomePage {
     }
 
     @Builder
-    filterItem(list: number[]){
+    filterItem(list: Filter[]){
         Column(){
             Text("职业")
             Flex({wrap: FlexWrap.Wrap, space: {main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5)}}){
-                ForEach(list, (item: number) => {
-                    Button("文案" ,{})
+                ForEach(list, (item: Filter) => {
+                    Button(item.name ,{})
                         .backgroundColor(Color.Transparent)
                         .border({width:1, color: Color.Black})
                         .fontColor(Color.Black)
-                }, (item: string) => item)
+                }, (item: Filter) => `${item.id}`)
             }
             .height('auto')
             .width("90%")
@@ -90,17 +91,17 @@ export struct HomePage {
                 .width(50)
                 .height(20)
                 .backgroundColor(Color.Green)
-                .draggable(true)
-                .onDragStart((e:DragEvent) => {
-                    console.info(e.getWindowX() + 'oy')
-                })
-                .onClick(() => {
-                    console.error("dayin")
+                .onTouch((e:TouchEvent) => {
+                    e.stopPropagation();
+                    switch (e.type){
+                        case TouchType.Move:{
+                            const yEnd = e.touches[0].y;
+                            console.log(yEnd + '');
+                        }
+                    }
                 })
                 Text("筛选项")
-                this.filterItem([1,2,3])
-
-                this.filterItem([1,2,3,4,5,6,7])
+                this.filterItem(this.data.classes)
             }
             .width('100%')
             .height('100%')
@@ -110,7 +111,10 @@ export struct HomePage {
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
     }
-
+    aboutToAppear() {
+        const h:number = display.getDefaultDisplaySync().height;
+        console.log(h + '')
+    }
     onPageShow() {
         console.log('IndexComponent onPageShow1');
         let httpRequest = http.createHttp();
@@ -133,6 +137,7 @@ export struct HomePage {
             const data = res.result as string;
             const d:Response<Meta> = JSON.parse(data);
             const firstName:string = d.data.classes[0].name;
+            this.data.classes = d.data.classes;
             console.log(firstName);
             httpRequest.destroy();
         }).catch((err: BusinessError) => {
@@ -144,7 +149,7 @@ export struct HomePage {
         Column() {
             List({ space: 20, initialIndex: 0 }) {
                 ListItemGroup({ header: this.header(), space: 20 }) {
-                    ForEach(this.data.data.cards, (item: Card) => {
+                    ForEach(this.data.cards, (item: Card) => {
                         ListItem() {
                             Column() {
                                 Text('' + item.image)
