@@ -12,8 +12,18 @@ interface Data {
     classes: Filter[];
 }
 
-interface Meta{
+interface MetaData{
     classes: Filter[];
+    rarities: Filter[];
+    types: Filter[];
+    sets: Filter[];
+    // setGroups
+}
+interface CardData{
+    cards: Card[];
+    cardCount: number;
+    page: number;
+    pageCount: number;
 }
 interface Filter{
     id: number;
@@ -26,11 +36,15 @@ interface Card {
 
 class HomeModel {
     classes: Filter[];
+    rarities: Filter[];
+    types: Filter[];
     cards: Card[];
 
     constructor(data?: Data) {
         this.classes = data?.classes || [];
         this.cards = data?.cards || [];
+        this.rarities = [];
+        this.types = [];
     }
 }
 
@@ -64,9 +78,9 @@ export struct HomePage {
     }
 
     @Builder
-    filterItem(list: Filter[]){
+    filterItem(title: string, list: Filter[]){
         Column(){
-            Text("职业")
+            Text(title)
             Flex({wrap: FlexWrap.Wrap, space: {main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5)}}){
                 ForEach(list, (item: Filter) => {
                     Button(item.name ,{})
@@ -101,7 +115,9 @@ export struct HomePage {
                     }
                 })
                 Text("筛选项")
-                this.filterItem(this.data.classes)
+                this.filterItem("职业", this.data.classes)
+                this.filterItem("类型", this.data.types)
+                this.filterItem("稀有度", this.data.rarities)
             }
             .width('100%')
             .height('100%')
@@ -118,16 +134,19 @@ export struct HomePage {
     onPageShow() {
         console.log('IndexComponent onPageShow1');
         let httpRequest = http.createHttp();
-        // httpRequest.request(
-        //     "http://localhost:8000/cards"
-        // ).then((res: http.HttpResponse) => {
-        //     const data = res.result as string;
-        //     this.data = new HomeModel(JSON.parse(data));
-        //     httpRequest.destroy();
-        // }).catch((err: BusinessError) => {
-        //     console.error('error:' + JSON.stringify(err));
-        // })
         httpRequest.request(
+            "http://localhost:8000/cards"
+        ).then((res: http.HttpResponse) => {
+            const data = res.result as string;
+            const d:Response<CardData> = JSON.parse(data);
+            this.data.cards = d.data.cards;
+        }).catch((err: BusinessError) => {
+            console.error('error:' + JSON.stringify(err));
+        }).finally(() =>{
+            httpRequest.destroy();
+        })
+        let httpRequest2 = http.createHttp();
+        httpRequest2.request(
             "http://localhost:8000/meta",
             {
                 expectDataType: http.HttpDataType.STRING,
@@ -135,13 +154,14 @@ export struct HomePage {
             }
         ).then((res: http.HttpResponse) => {
             const data = res.result as string;
-            const d:Response<Meta> = JSON.parse(data);
-            const firstName:string = d.data.classes[0].name;
+            const d:Response<MetaData> = JSON.parse(data);
             this.data.classes = d.data.classes;
-            console.log(firstName);
-            httpRequest.destroy();
+            this.data.rarities = d.data.rarities;
+            this.data.types = d.data.types;
         }).catch((err: BusinessError) => {
             console.error('error:' + JSON.stringify(err));
+        }).finally(() => {
+            httpRequest2.destroy();
         })
     }
 
@@ -152,14 +172,8 @@ export struct HomePage {
                     ForEach(this.data.cards, (item: Card) => {
                         ListItem() {
                             Column() {
-                                Text('' + item.image)
-                                    .width('100%')
-                                    .height(100)
-                                    .fontSize(16)
-                                    .textAlign(TextAlign.Center)
-                                    .borderRadius(10)
-                                    .backgroundColor(0xFFFFFF)
                                 Image(item.image)
+                                    .width(40)
                             }
                         }
                     }, (item: Card) => item.image)
