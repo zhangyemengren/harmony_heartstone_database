@@ -1,8 +1,9 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { LengthMetrics } from '@kit.ArkUI';
-import { display } from '@kit.ArkUI';
-import {Response} from '../../data/response';
+import { display, LengthMetrics } from '@kit.ArkUI';
+import BuildProfile from 'entry/BuildProfile';
+import {Float} from '../../components/Float';
+import { Response } from '../../data/response';
 
 interface Data {
     cardCount: number;
@@ -12,20 +13,22 @@ interface Data {
     classes: Filter[];
 }
 
-interface MetaData{
+interface MetaData {
     classes: Filter[];
     rarities: Filter[];
     types: Filter[];
     sets: Filter[];
     // setGroups
 }
-interface CardData{
+
+interface CardData {
     cards: Card[];
     cardCount: number;
     page: number;
     pageCount: number;
 }
-interface Filter{
+
+interface Filter {
     id: number;
     name: string;
 }
@@ -54,7 +57,10 @@ export struct HomePage {
     @State data: HomeModel = new HomeModel();
     @State sheetHeight: number = 300;
     @State sheetShow: boolean = false;
-    @State windowHeight:number = 0;
+    @State windowHeight: number = 0;
+    @State isDebugMode: boolean = BuildProfile.DEBUG;
+    @State containerWidth: number = 0;
+    @State containerHeight: number = 0;
 
     @Builder
     header() {
@@ -78,14 +84,14 @@ export struct HomePage {
     }
 
     @Builder
-    filterItem(title: string, list: Filter[]){
-        Column(){
+    filterItem(title: string, list: Filter[]) {
+        Column() {
             Text(title)
-            Flex({wrap: FlexWrap.Wrap, space: {main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5)}}){
+            Flex({ wrap: FlexWrap.Wrap, space: { main: LengthMetrics.vp(5), cross: LengthMetrics.vp(5) } }) {
                 ForEach(list, (item: Filter) => {
-                    Button(item.name ,{})
+                    Button(item.name, {})
                         .backgroundColor(Color.Transparent)
-                        .border({width:1, color: Color.Black})
+                        .border({ width: 1, color: Color.Black })
                         .fontColor(Color.Black)
                 }, (item: Filter) => `${item.id}`)
             }
@@ -99,21 +105,22 @@ export struct HomePage {
     filter() {
         Scroll() {
             Column() {
-                Row(){
+                Row() {
                     Text("bar")
                 }
                 .width(50)
                 .height(20)
                 .backgroundColor(Color.Green)
-                .onTouch((e:TouchEvent) => {
+                .onTouch((e: TouchEvent) => {
                     e.stopPropagation();
-                    switch (e.type){
-                        case TouchType.Move:{
+                    switch (e.type) {
+                        case TouchType.Move: {
                             const yEnd = e.touches[0].y;
                             console.log(yEnd + '');
                         }
                     }
                 })
+
                 Text("筛选项")
                 this.filterItem("职业", this.data.classes)
                 this.filterItem("类型", this.data.types)
@@ -127,10 +134,13 @@ export struct HomePage {
         .scrollBar(BarState.Off)
         .edgeEffect(EdgeEffect.Spring)
     }
+
     aboutToAppear() {
-        const h:number = display.getDefaultDisplaySync().height;
-        console.log(h + '')
+        const value = display.getDefaultDisplaySync();
+        this.containerWidth = value.width || 400;
+        this.containerHeight = value.height || 800;
     }
+
     onPageShow() {
         console.log('IndexComponent onPageShow1');
         let httpRequest = http.createHttp();
@@ -138,11 +148,11 @@ export struct HomePage {
             "http://localhost:8000/cards"
         ).then((res: http.HttpResponse) => {
             const data = res.result as string;
-            const d:Response<CardData> = JSON.parse(data);
+            const d: Response<CardData> = JSON.parse(data);
             this.data.cards = d.data.cards;
         }).catch((err: BusinessError) => {
             console.error('error:' + JSON.stringify(err));
-        }).finally(() =>{
+        }).finally(() => {
             httpRequest.destroy();
         })
         let httpRequest2 = http.createHttp();
@@ -150,11 +160,11 @@ export struct HomePage {
             "http://localhost:8000/meta",
             {
                 expectDataType: http.HttpDataType.STRING,
-                header: {'Content-Type': 'application/json' },
+                header: { 'Content-Type': 'application/json' },
             }
         ).then((res: http.HttpResponse) => {
             const data = res.result as string;
-            const d:Response<MetaData> = JSON.parse(data);
+            const d: Response<MetaData> = JSON.parse(data);
             this.data.classes = d.data.classes;
             this.data.rarities = d.data.rarities;
             this.data.types = d.data.types;
@@ -166,35 +176,48 @@ export struct HomePage {
     }
 
     build() {
-        Column() {
-            List({ space: 20, initialIndex: 0 }) {
-                ListItemGroup({ header: this.header(), space: 20 }) {
-                    ForEach(this.data.cards, (item: Card) => {
-                        ListItem() {
-                            Column() {
-                                Image(item.image)
-                                    .width(40)
+        Stack() {
+            Column() {
+                List({ space: 20, initialIndex: 0 }) {
+                    ListItemGroup({ header: this.header(), space: 20 }) {
+                        ForEach(this.data.cards, (item: Card) => {
+                            ListItem() {
+                                Column() {
+                                    Image(item.image)
+                                        .width(40)
+                                }
                             }
-                        }
-                    }, (item: Card) => item.image)
+                        }, (item: Card) => item.image)
+                    }
+                    .divider({
+                        strokeWidth: 2,
+                        color: 0xFFFFFF,
+                        startMargin: 20,
+                        endMargin: 20
+                    })
                 }
-                .divider({
-                    strokeWidth: 2,
-                    color: 0xFFFFFF,
-                    startMargin: 20,
-                    endMargin: 20
-                })
+                .width('90%')
+                .sticky(StickyStyle.Header)
+                .listDirection(Axis.Vertical)
+                .scrollBar(BarState.Off)
+                .friction(0.6)
+                .edgeEffect(EdgeEffect.Spring)
             }
-            .width('90%')
-            .sticky(StickyStyle.Header)
-            .listDirection(Axis.Vertical)
-            .scrollBar(BarState.Off)
-            .friction(0.6)
-            .edgeEffect(EdgeEffect.Spring)
+            .width('100%')
+            .height('100%')
+            .backgroundColor(0xDCDCDC)
+            .padding({ top: 5 })
+
+            if (this.isDebugMode) {
+                Float({ containerWidth: this.containerWidth, containerHeight: this.containerHeight }){
+                    Button({ type: ButtonType.Circle, stateEffect: true }) {
+                        SymbolGlyph($r("sys.symbol.gearshape"))
+                            .fontSize(30)
+                    }
+                    .width(155)
+                    .height(155)
+                }
+            }
         }
-        .width('100%')
-        .height('100%')
-        .backgroundColor(0xDCDCDC)
-        .padding({ top: 5 })
     }
 }

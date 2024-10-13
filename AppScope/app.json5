@@ -1,7 +1,7 @@
 {
   "app": {
-    "bundleName": "com.example.myapplication",
-    "vendor": "example",
+    "bundleName": "com.zhangyemengren.hs",
+    "vendor": "zhangyemengren",
     "versionCode": 1,
     "versionName": "0.0.1",
     "icon": "$media:app_icon",
