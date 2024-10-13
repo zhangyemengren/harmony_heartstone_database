@@ -3,8 +3,6 @@ import { curves } from '@kit.ArkUI';
 
 export class Constants {
     static readonly PAGE_PADDING: number = 12; // 页面内容内边距，用于悬浮窗位置计算
-    static readonly FLOAT_WINDOW_WIDTH: number = 120; // 悬浮窗宽度
-    static readonly FLOAT_WINDOW_HEIGHT: number = 160; // 悬浮窗高度
     static readonly INIT_POSITION_Y: number = 300; // 悬浮窗相对父容器左上角的Y坐标初始值
 }
 
@@ -14,7 +12,8 @@ export struct Float {
     @Builder closerBuilder(){};
     @BuilderParam children: () => void = this.closerBuilder;
     @State edge: Edges = { top: Constants.INIT_POSITION_Y, right: Constants.PAGE_PADDING };
-
+    @State componentWidth: number = 0;
+    @State componentHeight: number = 0;
     @Link containerWidth: number;
     @Link containerHeight: number;
     private windowStartX: number = 0;
@@ -40,7 +39,6 @@ export struct Float {
                         this.edge.right = this.edge.right as number - (windowX - this.windowStartX);
                     }
                     this.edge.top = this.edge.top as number + (windowY - this.windowStartY);
-                    console.log(`${windowX} ${windowY}`)
                     this.windowStartX = windowX;
                     this.windowStartY = windowY;
                 })
@@ -50,9 +48,9 @@ export struct Float {
                 // 计算悬浮窗中心点在父组件中水平方向的坐标
                 let centerX: number;
                 if (this.edge.left !== undefined) {
-                    centerX = this.edge.left as number + Constants.FLOAT_WINDOW_WIDTH / 2;
+                    centerX = this.edge.left as number + this.componentWidth / 2;
                 } else {
-                    centerX = this.containerWidth - (this.edge.right as number) - Constants.FLOAT_WINDOW_WIDTH / 2;
+                    centerX = this.containerWidth - (this.edge.right as number) - this.componentWidth / 2;
                 }
                 // TODO：知识点：通过判断悬浮窗在父组件中的位置，设置悬浮窗贴边，使用curves.springMotion()弹性动画曲线，可以实现阻尼动画效果
                 animateTo({ curve: curves.springMotion() }, () => {
@@ -68,8 +66,8 @@ export struct Float {
                     if (this.edge.top as number < Constants.PAGE_PADDING) {
                         this.edge.top = Constants.PAGE_PADDING;
                     } else if (this.edge.top as number >
-                        this.containerHeight - Constants.FLOAT_WINDOW_HEIGHT - Constants.PAGE_PADDING) {
-                        this.edge.top = this.containerHeight - Constants.FLOAT_WINDOW_HEIGHT - Constants.PAGE_PADDING;
+                        this.containerHeight - this.componentHeight - Constants.PAGE_PADDING) {
+                        this.edge.top = this.containerHeight - this.componentHeight - Constants.PAGE_PADDING;
                     }
                 })
                 break;
@@ -87,6 +85,14 @@ export struct Float {
         .position(this.edge)
         .onTouch((event: TouchEvent) => {
             this.onTouchEvent(event);
+        })
+        .onAreaChange((oldValue: Area, newValue: Area) => {
+           if (oldValue.width !== newValue.width){
+               this.componentWidth = newValue.width as number;
+           }
+           if (oldValue.height !== newValue.height){
+               this.componentHeight = newValue.height as number;
+           }
         })
     }
 }

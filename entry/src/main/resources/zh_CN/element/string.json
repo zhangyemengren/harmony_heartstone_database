@@ -6,11 +6,11 @@
     },
     {
       "name": "EntryAbility_desc",
-      "value": "app入口描述"
+      "value": "炉石卡牌库 用于搜索炉石传说卡牌"
     },
     {
       "name": "EntryAbility_label",
-      "value": "app入口名"
+      "value": "炉石卡牌库"
     }
   ]
 }

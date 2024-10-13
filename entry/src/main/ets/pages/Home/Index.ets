@@ -1,9 +1,10 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { display, LengthMetrics } from '@kit.ArkUI';
+import { LengthMetrics, window } from '@kit.ArkUI';
 import BuildProfile from 'entry/BuildProfile';
-import {Float} from '../../components/Float';
+import { Float } from '../../components/Float';
 import { Response } from '../../data/response';
+import { PREVIEWER_DEFAULT_HEIGHT, PREVIEWER_DEFAULT_WIDTH, TAB_HEIGHT } from '../../data/system';
 
 interface Data {
     cardCount: number;
@@ -136,9 +137,25 @@ export struct HomePage {
     }
 
     aboutToAppear() {
-        const value = display.getDefaultDisplaySync();
-        this.containerWidth = value.width || 400;
-        this.containerHeight = value.height || 800;
+
+        window.getLastWindow(getContext(this)).then((data) => {
+            // 系统默认区域
+            const arect = data.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
+            // 刘海屏区域
+            const arect2 = data.getWindowAvoidArea(window.AvoidAreaType.TYPE_CUTOUT)
+            // 屏幕区域
+            const prect = data.getWindowProperties()
+            // 大致计算 屏幕区域 - 不可用区域 再单位换算
+            // preview 时无法获取getWindowAvoidArea信息 给出大概默认值
+            this.containerWidth = px2vp(prect.windowRect.width || PREVIEWER_DEFAULT_WIDTH);
+            this.containerHeight = px2vp(
+                prect.windowRect.height -
+                arect.topRect.height -
+                arect.bottomRect.height -
+                arect2.topRect.height
+                    || PREVIEWER_DEFAULT_HEIGHT
+            ) - TAB_HEIGHT;
+        })
     }
 
     onPageShow() {
@@ -209,13 +226,13 @@ export struct HomePage {
             .padding({ top: 5 })
 
             if (this.isDebugMode) {
-                Float({ containerWidth: this.containerWidth, containerHeight: this.containerHeight }){
+                Float({ containerWidth: this.containerWidth, containerHeight: this.containerHeight }) {
                     Button({ type: ButtonType.Circle, stateEffect: true }) {
                         SymbolGlyph($r("sys.symbol.gearshape"))
                             .fontSize(30)
                     }
-                    .width(155)
-                    .height(155)
+                    .width(55)
+                    .height(55)
                 }
             }
         }
