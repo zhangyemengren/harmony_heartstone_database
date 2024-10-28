@@ -2,7 +2,7 @@ import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { LengthMetrics, window } from '@kit.ArkUI';
 import BuildProfile from 'entry/BuildProfile';
-import { Float } from '../../components/Float';
+import { Float } from '../../components/float';
 import { Response } from '../../data/response';
 import { PREVIEWER_DEFAULT_HEIGHT, PREVIEWER_DEFAULT_WIDTH, TAB_HEIGHT } from '../../data/system';
 

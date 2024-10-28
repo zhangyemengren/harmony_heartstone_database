@@ -1,7 +1,7 @@
-import { TAB_GROUP } from '../data/TabConfig';
+import { TAB_GROUP } from '../data/tabconfig';
 import { TAB_HEIGHT } from '../data/system';
 import { TabItems } from '../types/DataType';
-import { HomePage } from './Home/Index';
+import { HomePage } from './home/index';
 
 @Builder
 function TabContentItem(index: number) {
