@@ -8,7 +8,7 @@ struct StartPage{
     aboutToAppear(){
         setTimeout(() => {
             router.replaceUrl({
-                url: "pages/Index"
+                url: "pages/index"
             })
         }, 3000)
     }

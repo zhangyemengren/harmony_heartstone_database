@@ -1,6 +1,6 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { LengthMetrics, window } from '@kit.ArkUI';
+import { LengthMetrics, window, router } from '@kit.ArkUI';
 import BuildProfile from 'entry/BuildProfile';
 import { Float } from '../../components/float';
 import { Response } from '../../data/response';
@@ -233,6 +233,20 @@ export struct HomePage {
                     }
                     .width(55)
                     .height(55)
+                    .onClick(() => {
+                        console.log('123456')
+                        try {
+                            router.pushUrl({
+                                url: 'pages/dev_env/index'
+                            }).then(() => {
+                                console.log('then')
+                            }).catch((err: BusinessError) => {
+                                console.error(`Failed to jump to the second page. Code is ${err.code}, message is ${err.message}`)
+                            })
+                        }catch (err){
+                            console.error(`pushUrl failed, code is ${(err as BusinessError).code}, message is ${(err as BusinessError).message}`);
+                        }
+                    })
                 }
             }
         }

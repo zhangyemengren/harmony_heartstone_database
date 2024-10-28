@@ -1,4 +1,8 @@
-import {TabItems} from "../types/DataType";
+export interface TabItems {
+    name: Resource;
+    icon: Resource;
+    iconActive: Resource;
+}
 
 export const TAB_GROUP: TabItems[] = [
     {

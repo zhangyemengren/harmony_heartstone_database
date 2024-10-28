@@ -1,6 +1,7 @@
 {
   "src": [
     "pages/index",
-    "pages/start"
+    "pages/start",
+    "pages/dev_env/index"
   ]
 }

@@ -1,6 +1,5 @@
-import { TAB_GROUP } from '../data/tabconfig';
+import { TAB_GROUP, TabItems } from '../data/tabconfig';
 import { TAB_HEIGHT } from '../data/system';
-import { TabItems } from '../types/DataType';
 import { HomePage } from './home/index';
 
 @Builder
@@ -19,7 +18,6 @@ function TabContentItem(index: number) {
     }.width('100%')
 }
 
-// xxx.ets
 @Entry
 @Component
 struct TabEntry {
