@@ -4,6 +4,7 @@ import { LengthMetrics, window, router } from '@kit.ArkUI';
 import BuildProfile from 'entry/BuildProfile';
 import { Float } from '../../components/float';
 import { Response } from '../../data/response';
+import AppPreferences from '../../utils/app_preferences';
 import { PREVIEWER_DEFAULT_HEIGHT, PREVIEWER_DEFAULT_WIDTH, TAB_HEIGHT } from '../../data/system';
 
 interface Data {
@@ -137,7 +138,7 @@ export struct HomePage {
     }
 
     aboutToAppear() {
-
+        console.log('IndexComponent aboutToAppear');
         window.getLastWindow(getContext(this)).then((data) => {
             // 系统默认区域
             const arect = data.getWindowAvoidArea(window.AvoidAreaType.TYPE_SYSTEM)
@@ -156,13 +157,12 @@ export struct HomePage {
                     || PREVIEWER_DEFAULT_HEIGHT
             ) - TAB_HEIGHT;
         })
-    }
 
-    onPageShow() {
-        console.log('IndexComponent onPageShow1');
+        // 请求
         let httpRequest = http.createHttp();
+        const baseUrl = new AppPreferences(this).get(AppPreferences.keyMap.API_HOST).toString();
         httpRequest.request(
-            "http://localhost:8000/cards"
+            `${baseUrl}cards`
         ).then((res: http.HttpResponse) => {
             const data = res.result as string;
             const d: Response<CardData> = JSON.parse(data);
@@ -174,7 +174,7 @@ export struct HomePage {
         })
         let httpRequest2 = http.createHttp();
         httpRequest2.request(
-            "http://localhost:8000/meta",
+            `${baseUrl}meta`,
             {
                 expectDataType: http.HttpDataType.STRING,
                 header: { 'Content-Type': 'application/json' },
@@ -186,11 +186,17 @@ export struct HomePage {
             this.data.rarities = d.data.rarities;
             this.data.types = d.data.types;
         }).catch((err: BusinessError) => {
+            console.log(`需要改成ip${baseUrl}`)
             console.error('error:' + JSON.stringify(err));
         }).finally(() => {
             httpRequest2.destroy();
         })
     }
+
+    onPageShow(): void {
+        console.log('onPageShow')
+    }
+
 
     build() {
         Stack() {

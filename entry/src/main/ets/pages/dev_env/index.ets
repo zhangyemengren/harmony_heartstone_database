@@ -1,4 +1,5 @@
 import AppPreferences from '../../utils/app_preferences';
+import {router} from '@kit.ArkUI';
 
 @Entry
 @Component
@@ -9,6 +10,7 @@ export struct DevEnv {
         console.log(this.api)
         this.store.put(AppPreferences.keyMap.API_HOST, this.api);
         this.store.flush();
+        router.back();
     }
 
     aboutToAppear(): void {
