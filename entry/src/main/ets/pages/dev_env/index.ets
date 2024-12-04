@@ -1,4 +1,5 @@
 import AppPreferences from '../../utils/app_preferences';
+import { TitleBar } from '../../components/title_bar';
 import {router} from '@kit.ArkUI';
 
 @Entry
@@ -20,6 +21,7 @@ export struct DevEnv {
 
     build() {
         Column() {
+            TitleBar()
             Row() {
                 Text("api地址")
                 TextInput({

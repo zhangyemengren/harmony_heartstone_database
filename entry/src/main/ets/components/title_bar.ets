@@ -10,6 +10,7 @@ export struct TitleBar {
             Image($r('sys.symbol.backward_end_fill'))
                 .width(24)
                 .height(24)
+                .backgroundColor(Color.Black)
                 .margin({ bottom: 4 })
                 .objectFit(ImageFit.Contain)
                 .onClick(() => {

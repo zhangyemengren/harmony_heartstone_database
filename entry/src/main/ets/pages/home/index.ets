@@ -1,6 +1,6 @@
 import { http } from '@kit.NetworkKit';
 import { BusinessError } from '@kit.BasicServicesKit';
-import { LengthMetrics, window, router } from '@kit.ArkUI';
+import { LengthMetrics, window, router, uiObserver, UIObserver } from '@kit.ArkUI';
 import BuildProfile from 'entry/BuildProfile';
 import { Float } from '../../components/float';
 import { Response } from '../../data/response';
@@ -137,6 +137,26 @@ export struct HomePage {
         .edgeEffect(EdgeEffect.Spring)
     }
 
+    pageListener = (info: uiObserver.RouterPageInfo) => {
+        let routerInfo: uiObserver.RouterPageInfo | undefined = this.queryRouterPageInfo();
+        console.log(JSON.stringify(info));
+        console.log('x', JSON.stringify(routerInfo))
+        if (info.pageId == routerInfo?.pageId) {
+            if (info.state == uiObserver.RouterPageState.ON_PAGE_SHOW) {
+                console.log(`Index onPageShow`);
+                this.doRequest();
+            } else if (info.state == uiObserver.RouterPageState.ON_PAGE_HIDE) {
+                console.log(`Index onPageHide`);
+            }
+        }
+    }
+    tabListener(info: uiObserver.TabContentInfo){
+        if (info.index === 0 && info.state === uiObserver.TabContentState.ON_SHOW){
+            console.log(`Index onTabShow`);
+            this.doRequest();
+        }
+    }
+
     aboutToAppear() {
         console.log('IndexComponent aboutToAppear');
         window.getLastWindow(getContext(this)).then((data) => {
@@ -158,6 +178,18 @@ export struct HomePage {
             ) - TAB_HEIGHT;
         })
 
+        let uiObserver: UIObserver = this.getUIContext().getUIObserver();
+        uiObserver.on('routerPageUpdate', this.pageListener);
+        uiObserver.on('tabContentUpdate', this.tabListener);
+
+    }
+
+    aboutToDisappear(): void {
+        let uiObserver: UIObserver = this.getUIContext().getUIObserver();
+        uiObserver.off('routerPageUpdate', this.pageListener);
+        uiObserver.off('tabContentUpdate', this.tabListener);
+    }
+    doRequest(){
         // 请求
         let httpRequest = http.createHttp();
         const baseUrl = new AppPreferences(this).get(AppPreferences.keyMap.API_HOST).toString();
@@ -191,10 +223,6 @@ export struct HomePage {
         }).finally(() => {
             httpRequest2.destroy();
         })
-    }
-
-    onPageShow(): void {
-        console.log('onPageShow')
     }
 
 
